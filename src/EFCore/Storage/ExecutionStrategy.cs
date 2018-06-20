@@ -264,7 +264,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
                 try
                 {
                     Suspended = true;
-                    var result = await operation(Dependencies.CurrentDbContext.Context, state, cancellationToken);
+                    var result = await operation(Dependencies.CurrentDbContext.Context, state, cancellationToken).ConfigureAwait(false);
                     Suspended = false;
                     return result;
                 }
@@ -274,7 +274,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
                     if (verifySucceeded != null
                         && CallOnWrappedException(ex, ShouldVerifySuccessOn))
                     {
-                        var result = await ExecuteImplementationAsync(verifySucceeded, null, state, cancellationToken);
+                        var result = await ExecuteImplementationAsync(verifySucceeded, null, state, cancellationToken).ConfigureAwait(false);
                         if (result.IsSuccessful)
                         {
                             return result.Result;
@@ -299,7 +299,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
                     OnRetry();
                 }
 
-                await Task.Delay(delay.Value, cancellationToken);
+                await Task.Delay(delay.Value, cancellationToken).ConfigureAwait(false);
             }
         }
 

@@ -319,7 +319,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
         /// </returns>
         public virtual async Task<PropertyValues> GetDatabaseValuesAsync(CancellationToken cancellationToken = default)
         {
-            var values = await Finder.GetDatabaseValuesAsync(InternalEntry, cancellationToken);
+            var values = await Finder.GetDatabaseValuesAsync(InternalEntry, cancellationToken).ConfigureAwait(false);
 
             return values == null ? null : new ArrayPropertyValues(InternalEntry, values);
         }

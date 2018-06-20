@@ -77,7 +77,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
 
                 if (valueGenerator != null)
                 {
-                    entry[property] = await valueGenerator.NextAsync(new EntityEntry(entry), cancellationToken);
+                    entry[property] = await valueGenerator.NextAsync(new EntityEntry(entry), cancellationToken).ConfigureAwait(false);
 
                     if (valueGenerator.GeneratesTemporaryValues)
                     {

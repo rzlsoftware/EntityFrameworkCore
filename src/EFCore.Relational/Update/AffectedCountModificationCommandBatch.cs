@@ -127,13 +127,13 @@ namespace Microsoft.EntityFrameworkCore.Update
                     if (commandIndex < CommandResultSet.Count)
                     {
                         commandIndex = ModificationCommands[commandIndex].RequiresResultPropagation
-                            ? await ConsumeResultSetWithPropagationAsync(commandIndex, reader, cancellationToken)
-                            : await ConsumeResultSetWithoutPropagationAsync(commandIndex, reader, cancellationToken);
+                            ? await ConsumeResultSetWithPropagationAsync(commandIndex, reader, cancellationToken).ConfigureAwait(false)
+                            : await ConsumeResultSetWithoutPropagationAsync(commandIndex, reader, cancellationToken).ConfigureAwait(false);
                         actualResultSetCount++;
                     }
                 }
                 while (commandIndex < CommandResultSet.Count
-                       && await reader.DbDataReader.NextResultAsync(cancellationToken));
+                       && await reader.DbDataReader.NextResultAsync(cancellationToken).ConfigureAwait(false));
 
 #if DEBUG
                 while (commandIndex < CommandResultSet.Count

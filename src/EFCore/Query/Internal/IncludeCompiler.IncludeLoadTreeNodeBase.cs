@@ -216,7 +216,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 // ReSharper disable once ForCanBeConvertedToForeach
                 for (var i = 0; i < taskFactories.Count; i++)
                 {
-                    await taskFactories[i]();
+                    await taskFactories[i]().ConfigureAwait(false);
                 }
             }
 

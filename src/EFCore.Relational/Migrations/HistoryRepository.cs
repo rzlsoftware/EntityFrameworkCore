@@ -126,10 +126,10 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         ///     <c>True</c> if the table already exists, <c>false</c> otherwise.
         /// </returns>
         public virtual async Task<bool> ExistsAsync(CancellationToken cancellationToken = default)
-            => await Dependencies.DatabaseCreator.ExistsAsync(cancellationToken)
+            => await Dependencies.DatabaseCreator.ExistsAsync(cancellationToken).ConfigureAwait(false)
                && InterpretExistsResult(
                    await Dependencies.RawSqlCommandBuilder.Build(ExistsSql).ExecuteScalarAsync(
-                       Dependencies.Connection, cancellationToken: cancellationToken));
+                       Dependencies.Connection, cancellationToken: cancellationToken).ConfigureAwait(false));
 
         /// <summary>
         ///     Interprets the result of executing <see cref="ExistsSql" />.
@@ -214,7 +214,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             {
                 var command = Dependencies.RawSqlCommandBuilder.Build(GetAppliedMigrationsSql);
 
-                using (var reader = await command.ExecuteReaderAsync(Dependencies.Connection, cancellationToken: cancellationToken))
+                using (var reader = await command.ExecuteReaderAsync(Dependencies.Connection, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     while (await reader.ReadAsync(cancellationToken))
                     {

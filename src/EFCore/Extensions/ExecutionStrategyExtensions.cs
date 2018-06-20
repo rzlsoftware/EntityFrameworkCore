@@ -94,7 +94,7 @@ namespace Microsoft.EntityFrameworkCore
             return strategy.ExecuteAsync(
                 operation, async (operationScoped, ct) =>
                     {
-                        await operationScoped();
+                        await operationScoped().ConfigureAwait(false);
                         return true;
                     }, default);
         }
@@ -123,7 +123,7 @@ namespace Microsoft.EntityFrameworkCore
             return strategy.ExecuteAsync(
                 operation, async (operationScoped, ct) =>
                     {
-                        await operationScoped(ct);
+                        await operationScoped(ct).ConfigureAwait(false);
                         return true;
                     }, cancellationToken);
         }
@@ -203,7 +203,7 @@ namespace Microsoft.EntityFrameworkCore
             return strategy.ExecuteAsync(
                 new { operation, state }, async (t, ct) =>
                     {
-                        await t.operation(t.state);
+                        await t.operation(t.state).ConfigureAwait(false);
                         return true;
                     }, default);
         }
@@ -235,7 +235,7 @@ namespace Microsoft.EntityFrameworkCore
             return strategy.ExecuteAsync(
                 new { operation, state }, async (t, ct) =>
                     {
-                        await t.operation(t.state, ct);
+                        await t.operation(t.state, ct).ConfigureAwait(false);
                         return true;
                     }, cancellationToken);
         }
@@ -570,7 +570,7 @@ namespace Microsoft.EntityFrameworkCore
             => strategy.ExecuteInTransactionAsync(
                 state, async (s, ct) =>
                     {
-                        await operation(s, ct);
+                        await operation(s, ct).ConfigureAwait(false);
                         return true;
                     }, verifySucceeded, cancellationToken);
 
@@ -725,15 +725,15 @@ namespace Microsoft.EntityFrameworkCore
                 async (c, s, ct) =>
                     {
                         Check.NotNull(beginTransaction, nameof(beginTransaction));
-                        using (var transaction = await beginTransaction(c, cancellationToken))
+                        using (var transaction = await beginTransaction(c, cancellationToken).ConfigureAwait(false))
                         {
                             s.CommitFailed = false;
-                            s.Result = await s.Operation(s.State, ct);
+                            s.Result = await s.Operation(s.State, ct).ConfigureAwait(false);
                             s.CommitFailed = true;
                             transaction.Commit();
                         }
                         return s.Result;
-                    }, async (c, s, ct) => new ExecutionResult<TResult>(s.CommitFailed && await s.VerifySucceeded(s.State, ct), s.Result));
+                    }, async (c, s, ct) => new ExecutionResult<TResult>(s.CommitFailed && await s.VerifySucceeded(s.State, ct).ConfigureAwait(false), s.Result));
 
         private class ExecutionState<TState, TResult>
         {

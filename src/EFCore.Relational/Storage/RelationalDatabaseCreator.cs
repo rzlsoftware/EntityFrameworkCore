@@ -124,7 +124,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     A task that represents the asynchronous operation.
         /// </returns>
         public virtual async Task CreateTablesAsync(CancellationToken cancellationToken = default)
-            => await Dependencies.MigrationCommandExecutor.ExecuteNonQueryAsync(GetCreateTablesCommands(), Dependencies.Connection, cancellationToken);
+            => await Dependencies.MigrationCommandExecutor.ExecuteNonQueryAsync(GetCreateTablesCommands(), Dependencies.Connection, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         ///     Gets the commands that will create all tables from the model.
@@ -198,7 +198,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         {
             if (await ExistsAsync(cancellationToken))
             {
-                await DeleteAsync(cancellationToken);
+                await DeleteAsync(cancellationToken).ConfigureAwait(false);
 
                 return true;
             }
@@ -250,15 +250,15 @@ namespace Microsoft.EntityFrameworkCore.Storage
             {
                 if (!await ExistsAsync(cancellationToken))
                 {
-                    await CreateAsync(cancellationToken);
-                    await CreateTablesAsync(cancellationToken);
+                    await CreateAsync(cancellationToken).ConfigureAwait(false);
+                    await CreateTablesAsync(cancellationToken).ConfigureAwait(false);
 
                     return true;
                 }
 
                 if (!await HasTablesAsync(cancellationToken))
                 {
-                    await CreateTablesAsync(cancellationToken);
+                    await CreateTablesAsync(cancellationToken).ConfigureAwait(false);
 
                     return true;
                 }

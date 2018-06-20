@@ -145,7 +145,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
             var keyValues = GetLoadValues(navigation, entry);
             if (keyValues != null)
             {
-                await Query(navigation, keyValues).LoadAsync(cancellationToken);
+                await Query(navigation, keyValues).LoadAsync(cancellationToken).ConfigureAwait(false);
             }
 
             entry.SetIsLoaded(navigation);

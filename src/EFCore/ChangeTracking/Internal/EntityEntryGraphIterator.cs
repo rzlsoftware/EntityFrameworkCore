@@ -99,7 +99,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                                 node.CreateNode(node, stateManager.GetOrCreateEntry(relatedEntity), navigation),
                                 state,
                                 handleNode,
-                                cancellationToken);
+                                cancellationToken).ConfigureAwait(false);
                         }
                     }
                     else
@@ -112,7 +112,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                             node.CreateNode(node, entry, navigation),
                             state,
                             handleNode,
-                            cancellationToken);
+                            cancellationToken).ConfigureAwait(false);
                     }
                 }
             }

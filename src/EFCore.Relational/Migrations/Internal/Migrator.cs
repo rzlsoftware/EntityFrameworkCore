@@ -112,21 +112,21 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
             {
                 if (!await _databaseCreator.ExistsAsync(cancellationToken))
                 {
-                    await _databaseCreator.CreateAsync(cancellationToken);
+                    await _databaseCreator.CreateAsync(cancellationToken).ConfigureAwait(false);
                 }
 
                 var command = _rawSqlCommandBuilder.Build(_historyRepository.GetCreateScript());
 
-                await command.ExecuteNonQueryAsync(_connection, cancellationToken: cancellationToken);
+                await command.ExecuteNonQueryAsync(_connection, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             var commandLists = GetMigrationCommandLists(
-                await _historyRepository.GetAppliedMigrationsAsync(cancellationToken),
+                await _historyRepository.GetAppliedMigrationsAsync(cancellationToken).ConfigureAwait(false),
                 targetMigration);
 
             foreach (var commandList in commandLists)
             {
-                await _migrationCommandExecutor.ExecuteNonQueryAsync(commandList(), _connection, cancellationToken);
+                await _migrationCommandExecutor.ExecuteNonQueryAsync(commandList(), _connection, cancellationToken).ConfigureAwait(false);
             }
         }
 

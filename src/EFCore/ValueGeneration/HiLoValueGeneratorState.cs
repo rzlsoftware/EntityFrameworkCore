@@ -105,7 +105,7 @@ namespace Microsoft.EntityFrameworkCore.ValueGeneration
                     // case just get a value out of the new block instead of requesting one.
                     if (newValue.High == _currentValue.High)
                     {
-                        var newCurrent = await getNewLowValue(cancellationToken);
+                        var newCurrent = await getNewLowValue(cancellationToken).ConfigureAwait(false);
                         newValue = new HiLoValue(newCurrent, newCurrent + _blockSize);
                         _currentValue = newValue;
                     }

@@ -84,7 +84,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
 
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
-                await connection.OpenAsync(cancellationToken);
+                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
                 try
                 {
@@ -97,7 +97,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
                             if (transaction == null
                                 && !command.TransactionSuppressed)
                             {
-                                transaction = await connection.BeginTransactionAsync(cancellationToken);
+                                transaction = await connection.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
                             }
 
                             if (transaction != null
@@ -108,7 +108,7 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
                                 transaction = null;
                             }
 
-                            await command.ExecuteNonQueryAsync(connection, cancellationToken: cancellationToken);
+                            await command.ExecuteNonQueryAsync(connection, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
                         transaction?.Commit();

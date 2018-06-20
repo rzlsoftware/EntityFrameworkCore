@@ -109,7 +109,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
             foreach (var property in FindGeneratingProperties(entry))
             {
                 var valueGenerator = GetValueGenerator(entry, property);
-                var generatedValue = await valueGenerator.NextAsync(entityEntry, cancellationToken);
+                var generatedValue = await valueGenerator.NextAsync(entityEntry, cancellationToken).ConfigureAwait(false);
                 var temporary = valueGenerator.GeneratesTemporaryValues;
 
                 Log(entry, property, generatedValue, temporary);

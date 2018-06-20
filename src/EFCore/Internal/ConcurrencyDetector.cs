@@ -53,7 +53,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
         /// </summary>
         public virtual async Task<IDisposable> EnterCriticalSectionAsync(CancellationToken cancellationToken)
         {
-            await _semaphore.WaitAsync(cancellationToken);
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             return new AsyncDisposer(EnterCriticalSection(), this);
         }

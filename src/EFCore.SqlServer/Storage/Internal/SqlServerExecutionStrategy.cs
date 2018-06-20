@@ -64,7 +64,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
         {
             try
             {
-                return await operation(Dependencies.CurrentDbContext.Context, state, cancellationToken);
+                return await operation(Dependencies.CurrentDbContext.Context, state, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex) when (ExecutionStrategy.CallOnWrappedException(ex, SqlServerTransientExceptionDetector.ShouldRetryOn))
             {

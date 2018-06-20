@@ -69,6 +69,6 @@ namespace Microsoft.EntityFrameworkCore.Migrations
             => await _relationalCommand.ExecuteNonQueryAsync(
                 Check.NotNull(connection, nameof(connection)),
                 parameterValues,
-                cancellationToken);
+                cancellationToken).ConfigureAwait(false);
     }
 }

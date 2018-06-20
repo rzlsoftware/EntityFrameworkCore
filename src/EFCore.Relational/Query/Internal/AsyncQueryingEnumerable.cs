@@ -74,7 +74,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                 try
                 {
-                    await _relationalQueryContext.Connection.Semaphore.WaitAsync(cancellationToken);
+                    await _relationalQueryContext.Connection.Semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
                     if (_buffer == null)
                     {
@@ -84,7 +84,8 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                         }
 
                         return await _executionStrategy
-                            .ExecuteAsync(_executionStrategy.RetriesOnFailure, _bufferlessMoveNext, null, cancellationToken);
+                            .ExecuteAsync(_executionStrategy.RetriesOnFailure, _bufferlessMoveNext, null, cancellationToken)
+                            .ConfigureAwait(false);
                     }
 
                     if (_buffer.Count > 0)
@@ -107,7 +108,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             {
                 if (_dataReader == null)
                 {
-                    await _relationalQueryContext.Connection.OpenAsync(cancellationToken);
+                    await _relationalQueryContext.Connection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
                     try
                     {
@@ -116,13 +117,15 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                                 .GetRelationalCommand(_relationalQueryContext.ParameterValues);
 
                         await _relationalQueryContext.Connection
-                            .RegisterBufferableAsync(this, cancellationToken);
+                            .RegisterBufferableAsync(this, cancellationToken)
+                            .ConfigureAwait(false);
 
                         _dataReader
                             = await relationalCommand.ExecuteReaderAsync(
                                 _relationalQueryContext.Connection,
                                 _relationalQueryContext.ParameterValues,
-                                cancellationToken);
+                                cancellationToken)
+                                .ConfigureAwait(false);
                     }
                     catch
                     {
@@ -138,7 +141,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                     _valueBufferFactory = _shaperCommandContext.ValueBufferFactory;
                 }
 
-                var hasNext = await _dataReader.ReadAsync(cancellationToken);
+                var hasNext = await _dataReader.ReadAsync(cancellationToken).ConfigureAwait(false);
 
                 Current
                     = hasNext
@@ -147,7 +150,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                 if (buffer)
                 {
-                    await BufferAllAsync(cancellationToken);
+                    await BufferAllAsync(cancellationToken).ConfigureAwait(false);
                 }
 
                 return hasNext;

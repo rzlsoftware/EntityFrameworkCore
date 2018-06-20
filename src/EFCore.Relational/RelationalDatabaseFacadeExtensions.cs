@@ -324,7 +324,7 @@ namespace Microsoft.EntityFrameworkCore
                     .ExecuteNonQueryAsync(
                         databaseFacade.GetRelationalService<IRelationalConnection>(),
                         rawSqlCommand.ParameterValues,
-                        cancellationToken);
+                        cancellationToken).ConfigureAwait(false);
             }
         }
 

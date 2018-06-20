@@ -159,7 +159,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                             {
                                 _innerEnumerator = _exceptionInterceptor._innerAsyncEnumerable.GetEnumerator();
                             }
-                            return await _innerEnumerator.MoveNext(cancellationToken);
+                            return await _innerEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
                         }
                         catch (Exception exception)
                         {
@@ -390,7 +390,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                     if (!_moved)
                     {
-                        await _task;
+                        await _task.ConfigureAwait(false);
 
                         _moved = true;
 

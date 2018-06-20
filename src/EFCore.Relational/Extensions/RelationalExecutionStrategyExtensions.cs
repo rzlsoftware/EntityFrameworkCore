@@ -230,7 +230,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
                 state,
                 async (s, ct) =>
                     {
-                        await operation(s, ct);
+                        await operation(s, ct).ConfigureAwait(false);
                         return true;
                     }, verifySucceeded, isolationLevel, cancellationToken);
 

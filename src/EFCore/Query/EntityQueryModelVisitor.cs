@@ -1411,7 +1411,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                         return false;
                     }
 
-                    Current = await _selector(_enumerator.Current, cancellationToken);
+                    Current = await _selector(_enumerator.Current, cancellationToken).ConfigureAwait(false);
 
                     return true;
                 }

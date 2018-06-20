@@ -151,7 +151,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
                 {
                     using (await _exceptionInterceptor._queryContext.ConcurrencyDetector
-                        .EnterCriticalSectionAsync(cancellationToken))
+                        .EnterCriticalSectionAsync(cancellationToken).ConfigureAwait(false))
                     {
                         try
                         {
@@ -303,7 +303,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
                 {
-                    if (!await _asyncEnumerator.MoveNext())
+                    if (!await _asyncEnumerator.MoveNext().ConfigureAwait(false))
                     {
                         return false;
                     }

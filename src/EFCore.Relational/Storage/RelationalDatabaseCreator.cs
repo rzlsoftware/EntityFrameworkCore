@@ -196,7 +196,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </returns>
         public virtual async Task<bool> EnsureDeletedAsync(CancellationToken cancellationToken = default)
         {
-            if (await ExistsAsync(cancellationToken))
+            if (await ExistsAsync(cancellationToken).ConfigureAwait(false))
             {
                 await DeleteAsync(cancellationToken).ConfigureAwait(false);
 
@@ -248,7 +248,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         {
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (!await ExistsAsync(cancellationToken))
+                if (!await ExistsAsync(cancellationToken).ConfigureAwait(false))
                 {
                     await CreateAsync(cancellationToken).ConfigureAwait(false);
                     await CreateTablesAsync(cancellationToken).ConfigureAwait(false);
@@ -256,7 +256,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
                     return true;
                 }
 
-                if (!await HasTablesAsync(cancellationToken))
+                if (!await HasTablesAsync(cancellationToken).ConfigureAwait(false))
                 {
                     await CreateTablesAsync(cancellationToken).ConfigureAwait(false);
 

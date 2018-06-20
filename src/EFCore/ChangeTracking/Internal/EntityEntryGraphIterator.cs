@@ -76,7 +76,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
             Func<EntityEntryGraphNode, TState, CancellationToken, Task<bool>> handleNode,
             CancellationToken cancellationToken = default)
         {
-            if (!await handleNode(node, state, cancellationToken))
+            if (!await handleNode(node, state, cancellationToken).ConfigureAwait(false))
             {
                 return;
             }

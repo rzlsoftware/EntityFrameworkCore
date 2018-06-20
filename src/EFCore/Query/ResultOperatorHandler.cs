@@ -330,7 +330,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                                     _groupByAsyncEnumerable._keySelector,
                                     e => e,
                                     _comparer,
-                                    cancellationToken)).GetEnumerator();
+                                    cancellationToken).ConfigureAwait(false)).GetEnumerator();
 
                         _hasNext = _lookupEnumerator.MoveNext();
                     }
@@ -341,7 +341,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
                         foreach (var item in _lookupEnumerator.Current)
                         {
-                            grouping.Add(await _groupByAsyncEnumerable._elementSelector(item, cancellationToken));
+                            grouping.Add(await _groupByAsyncEnumerable._elementSelector(item, cancellationToken).ConfigureAwait(false));
                         }
 
                         Current = grouping;

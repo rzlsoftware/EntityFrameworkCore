@@ -783,7 +783,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                                 break;
                             }
 
-                            grouping.Add(await _groupByAsyncEnumerable._elementSelector(_sourceEnumerator.Current, cancellationToken));
+                            grouping.Add(await _groupByAsyncEnumerable._elementSelector(_sourceEnumerator.Current, cancellationToken).ConfigureAwait(false));
                         }
 
                         Current = grouping;

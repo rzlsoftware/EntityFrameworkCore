@@ -127,7 +127,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                     }
 
                     using (await _relationalQueryContext.ConcurrencyDetector
-                        .EnterCriticalSectionAsync(cancellationToken))
+                        .EnterCriticalSectionAsync(cancellationToken).ConfigureAwait(false))
                     {
                         bool hasNext;
 
@@ -241,7 +241,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
                 {
-                    if (!await _enumerator.MoveNext(cancellationToken))
+                    if (!await _enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                     {
                         return false;
                     }
@@ -309,7 +309,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
             using (var enumerator = valueBuffers.GetEnumerator())
             {
-                if (await enumerator.MoveNext(cancellationToken))
+                if (await enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                 {
                     return enumerator.Current[0] == null
                         ? !throwOnNullResult

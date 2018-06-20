@@ -108,9 +108,9 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
         {
             _logger.MigrateUsingConnection(this, _connection);
 
-            if (!await _historyRepository.ExistsAsync(cancellationToken))
+            if (!await _historyRepository.ExistsAsync(cancellationToken).ConfigureAwait(false))
             {
-                if (!await _databaseCreator.ExistsAsync(cancellationToken))
+                if (!await _databaseCreator.ExistsAsync(cancellationToken).ConfigureAwait(false))
                 {
                     await _databaseCreator.CreateAsync(cancellationToken).ConfigureAwait(false);
                 }

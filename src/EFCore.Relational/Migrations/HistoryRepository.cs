@@ -210,13 +210,13 @@ namespace Microsoft.EntityFrameworkCore.Migrations
         {
             var rows = new List<HistoryRow>();
 
-            if (await ExistsAsync(cancellationToken))
+            if (await ExistsAsync(cancellationToken).ConfigureAwait(false))
             {
                 var command = Dependencies.RawSqlCommandBuilder.Build(GetAppliedMigrationsSql);
 
                 using (var reader = await command.ExecuteReaderAsync(Dependencies.Connection, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
-                    while (await reader.ReadAsync(cancellationToken))
+                    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                     {
                         rows.Add(new HistoryRow(reader.DbDataReader.GetString(0), reader.DbDataReader.GetString(1)));
                     }

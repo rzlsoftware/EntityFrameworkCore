@@ -1406,7 +1406,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
                 {
-                    if (!await _enumerator.MoveNext(cancellationToken))
+                    if (!await _enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                     {
                         return false;
                     }

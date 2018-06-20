@@ -220,7 +220,7 @@ namespace Microsoft.EntityFrameworkCore.Update
                 var tableModification = ModificationCommands[commandIndex];
                 Debug.Assert(tableModification.RequiresResultPropagation);
 
-                if (!await reader.ReadAsync(cancellationToken))
+                if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 {
                     var expectedRowsAffected = rowsAffected + 1;
                     while (++commandIndex < CommandResultSet.Count
@@ -300,7 +300,7 @@ namespace Microsoft.EntityFrameworkCore.Update
                 expectedRowsAffected++;
             }
 
-            if (await reader.ReadAsync(cancellationToken))
+            if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 var rowsAffected = reader.DbDataReader.GetInt32(0);
                 if (rowsAffected != expectedRowsAffected)

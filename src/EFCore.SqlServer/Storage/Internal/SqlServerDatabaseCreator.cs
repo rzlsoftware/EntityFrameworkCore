@@ -99,7 +99,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
         protected override Task<bool> HasTablesAsync(CancellationToken cancellationToken = default)
             => Dependencies.ExecutionStrategyFactory.Create().ExecuteAsync(
                 _connection,
-                async (connection, ct) => (int)await CreateHasTablesCommand().ExecuteScalarAsync(connection, cancellationToken: ct) != 0, cancellationToken);
+                async (connection, ct) => (int)await CreateHasTablesCommand().ExecuteScalarAsync(connection, cancellationToken: ct).ConfigureAwait(false) != 0, cancellationToken);
 
         private IRelationalCommand CreateHasTablesCommand()
             => _rawSqlCommandBuilder

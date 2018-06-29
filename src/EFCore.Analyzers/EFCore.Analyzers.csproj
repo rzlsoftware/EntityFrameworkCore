@@ -12,6 +12,10 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>..\EFCore.ruleset</CodeAnalysisRuleSet>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
+    <Version>2.1.1.1-RZL</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>2.1.1.1</AssemblyVersion>
+    <FileVersion>2.1.1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

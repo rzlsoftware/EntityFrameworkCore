@@ -13,6 +13,10 @@ Microsoft.EntityFrameworkCore.DbSet
     <RootNamespace>Microsoft.EntityFrameworkCore</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>..\EFCore.ruleset</CodeAnalysisRuleSet>
+    <Version>2.1.1.1-RZL</Version>
+    <AssemblyVersion>2.1.1.1</AssemblyVersion>
+    <FileVersion>2.1.1.1</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

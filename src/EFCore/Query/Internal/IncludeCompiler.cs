@@ -349,7 +349,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
         {
             if (entity != null)
             {
-                await fixup(queryContext, entity, included, cancellationToken);
+                await fixup(queryContext, entity, included, cancellationToken).ConfigureAwait(false);
             }
 
             return entity;

@@ -182,7 +182,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                     using (_dataReader)
                     {
-                        while (await _dataReader.ReadAsync(cancellationToken))
+                        while (await _dataReader.ReadAsync(cancellationToken).ConfigureAwait(false))
                         {
                             _buffer.Enqueue(_valueBufferFactory.Create(_dbDataReader));
                         }

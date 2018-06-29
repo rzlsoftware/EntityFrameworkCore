@@ -2620,7 +2620,7 @@ namespace Microsoft.EntityFrameworkCore
 
             using (var enumerator = asyncEnumerable.GetEnumerator())
             {
-                while (await enumerator.MoveNext(cancellationToken))
+                while (await enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                 {
                 }
             }

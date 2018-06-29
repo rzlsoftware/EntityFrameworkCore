@@ -124,7 +124,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     A task that represents the asynchronous operation.
         /// </returns>
         public virtual async Task CreateTablesAsync(CancellationToken cancellationToken = default)
-            => await Dependencies.MigrationCommandExecutor.ExecuteNonQueryAsync(GetCreateTablesCommands(), Dependencies.Connection, cancellationToken);
+            => await Dependencies.MigrationCommandExecutor.ExecuteNonQueryAsync(GetCreateTablesCommands(), Dependencies.Connection, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         ///     Gets the commands that will create all tables from the model.
@@ -196,9 +196,9 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </returns>
         public virtual async Task<bool> EnsureDeletedAsync(CancellationToken cancellationToken = default)
         {
-            if (await ExistsAsync(cancellationToken))
+            if (await ExistsAsync(cancellationToken).ConfigureAwait(false))
             {
-                await DeleteAsync(cancellationToken);
+                await DeleteAsync(cancellationToken).ConfigureAwait(false);
 
                 return true;
             }
@@ -248,17 +248,17 @@ namespace Microsoft.EntityFrameworkCore.Storage
         {
             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (!await ExistsAsync(cancellationToken))
+                if (!await ExistsAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    await CreateAsync(cancellationToken);
-                    await CreateTablesAsync(cancellationToken);
+                    await CreateAsync(cancellationToken).ConfigureAwait(false);
+                    await CreateTablesAsync(cancellationToken).ConfigureAwait(false);
 
                     return true;
                 }
 
-                if (!await HasTablesAsync(cancellationToken))
+                if (!await HasTablesAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    await CreateTablesAsync(cancellationToken);
+                    await CreateTablesAsync(cancellationToken).ConfigureAwait(false);
 
                     return true;
                 }

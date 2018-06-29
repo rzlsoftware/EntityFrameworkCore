@@ -121,16 +121,16 @@ namespace Microsoft.EntityFrameworkCore.Update.Internal
                     && Transaction.Current == null
                     && CurrentContext.Context.Database.AutoTransactionsEnabled)
                 {
-                    startedTransaction = await connection.BeginTransactionAsync(cancellationToken);
+                    startedTransaction = await connection.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
-                    await connection.OpenAsync(cancellationToken);
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
                 }
 
                 foreach (var batch in commandBatches)
                 {
-                    await batch.ExecuteAsync(connection, cancellationToken);
+                    await batch.ExecuteAsync(connection, cancellationToken).ConfigureAwait(false);
                     rowsAffected += batch.ModificationCommands.Count;
                 }
 

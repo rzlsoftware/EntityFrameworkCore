@@ -75,7 +75,7 @@ namespace Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal
         /// </summary>
         public override async Task<bool> OpenAsync(CancellationToken cancellationToken, bool errorsExpected = false)
         {
-            if (await base.OpenAsync(cancellationToken, errorsExpected))
+            if (await base.OpenAsync(cancellationToken, errorsExpected).ConfigureAwait(false))
             {
                 EnableForeignKeys();
                 return true;

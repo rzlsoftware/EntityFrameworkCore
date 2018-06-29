@@ -251,7 +251,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
 
             var dbCommand = CreateCommand(connection, parameterValues);
 
-            await connection.OpenAsync(cancellationToken);
+            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
             var commandId = Guid.NewGuid();
 
@@ -274,13 +274,13 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 {
                     case DbCommandMethod.ExecuteNonQuery:
                     {
-                        result = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
+                        result = await dbCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
 
                         break;
                     }
                     case DbCommandMethod.ExecuteScalar:
                     {
-                        result = await dbCommand.ExecuteScalarAsync(cancellationToken);
+                        result = await dbCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
 
                         break;
                     }
@@ -289,7 +289,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                         result = new RelationalDataReader(
                             connection,
                             dbCommand,
-                            await dbCommand.ExecuteReaderAsync(cancellationToken),
+                            await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false),
                             commandId,
                             Logger);
                         readerOpen = true;

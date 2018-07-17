@@ -4,6 +4,8 @@
 using System;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using Remotion.Linq.Clauses;
@@ -24,10 +26,11 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
         public UnbufferedEntityShaper(
             [NotNull] IQuerySource querySource,
             bool trackingQuery,
+            bool isReloadQuery,
             [NotNull] IKey key,
             [NotNull] Func<MaterializationContext, object> materializer,
             [CanBeNull] Expression materializerExpression)
-            : base(querySource, trackingQuery, key, materializer, materializerExpression)
+            : base(querySource, trackingQuery, isReloadQuery, key, materializer, materializerExpression)
         {
         }
 
@@ -49,6 +52,11 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
 
                 if (entry != null)
                 {
+                    if (IsReloadQuery)
+                    {
+                        ReloadEntityHelper.RefreshInternalEntityEntry(entry, valueBuffer, queryContext.Context);
+                    }
+
                     return (TEntity)entry.Entity;
                 }
             }
@@ -67,6 +75,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
             => new UnbufferedOffsetEntityShaper<TDerived>(
                 QuerySource,
                 IsTrackingQuery,
+                IsReloadQuery,
                 Key,
                 Materializer);
 
@@ -78,6 +87,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
             => new UnbufferedOffsetEntityShaper<TEntity>(
                     QuerySource,
                     IsTrackingQuery,
+                    IsReloadQuery,
                     Key,
                     Materializer)
                 .AddOffset(offset);

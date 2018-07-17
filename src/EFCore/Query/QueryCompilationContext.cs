@@ -297,6 +297,25 @@ namespace Microsoft.EntityFrameworkCore.Query
         }
 
         /// <summary>
+        ///     Gets a value indicating whether this is a reload query.
+        /// </summary>
+        /// <value>
+        ///     true if this object is a reload query, false if not.
+        /// </value>
+        public virtual bool IsReloadQuery
+        {
+            get
+            {
+                var lastTrackingModifier
+                    = QueryAnnotations
+                        .OfType<ReloadQueryResultOperator>()
+                        .LastOrDefault();
+
+                return lastTrackingModifier?.IsReloadQuery ?? false;
+            }
+        }
+
+        /// <summary>
         ///     Gets a value indicating whether this query should have model-level query filters applied.
         /// </summary>
         /// <value>

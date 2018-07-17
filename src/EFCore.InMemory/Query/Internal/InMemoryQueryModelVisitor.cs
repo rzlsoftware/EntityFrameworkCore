@@ -72,6 +72,7 @@ namespace Microsoft.EntityFrameworkCore.InMemory.Query.Internal
                                                 queryContext.Context),
                                             c => materializer(t.EntityType, c)),
                                         queryStateManager,
+                                        isReloadQuery: false,
                                         throwOnNullKey: false);
                             }));
 

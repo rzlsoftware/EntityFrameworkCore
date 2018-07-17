@@ -27,10 +27,11 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
         public BufferedEntityShaper(
             [NotNull] IQuerySource querySource,
             bool trackingQuery,
+            bool isReloadQuery,
             [NotNull] IKey key,
             [NotNull] Func<MaterializationContext, object> materializer,
             [CanBeNull] Dictionary<Type, int[]> typeIndexMap)
-            : base(querySource, trackingQuery, key, materializer, materializerExpression: null)
+            : base(querySource, trackingQuery, isReloadQuery, key, materializer, materializerExpression: null)
         {
             _typeIndexMap = typeIndexMap;
         }
@@ -58,6 +59,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                             Materializer,
                             _typeIndexMap),
                         queryStateManager: IsTrackingQuery,
+                        isReloadQuery: IsReloadQuery,
                         throwOnNullKey: !AllowNullResult);
 
             return entity;
@@ -71,6 +73,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
             => new BufferedOffsetEntityShaper<TDerived>(
                 QuerySource,
                 IsTrackingQuery,
+                IsReloadQuery,
                 Key,
                 Materializer,
                 _typeIndexMap);
@@ -83,6 +86,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
             => new BufferedOffsetEntityShaper<TEntity>(
                     QuerySource,
                     IsTrackingQuery,
+                    IsReloadQuery,
                     Key,
                     Materializer,
                     _typeIndexMap)

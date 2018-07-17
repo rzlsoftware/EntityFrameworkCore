@@ -25,6 +25,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             [NotNull] IKey key,
             EntityLoadInfo entityLoadInfo,
             bool queryStateManager,
+            bool isReloadQuery,
             bool throwOnNullKey);
 
         /// <summary>

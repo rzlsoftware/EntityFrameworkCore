@@ -3,113 +3,72 @@
 
 using System;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage;
+using Remotion.Linq;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses.StreamedData;
 
-namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
+namespace Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal
 {
     /// <summary>
     ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
     ///     directly from your code. This API may change or be removed in future releases.
     /// </summary>
-    public abstract class EntityShaper : Shaper
+    public class ReloadQueryResultOperator : SequenceTypePreservingResultOperatorBase, IQueryAnnotation
     {
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        protected EntityShaper(
-            [NotNull] IQuerySource querySource,
-            bool trackingQuery,
-            bool isReloadQuery,
-            [NotNull] IKey key,
-            [NotNull] Func<MaterializationContext, object> materializer,
-            [CanBeNull] Expression materializerExpression)
-            : base(querySource)
+        public ReloadQueryResultOperator(bool isReloadQuery)
         {
-            IsTrackingQuery = trackingQuery;
             IsReloadQuery = isReloadQuery;
-            Key = key;
-            Materializer = materializer;
-            MaterializerExpression = materializerExpression;
         }
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public Expression MaterializerExpression { get; }
+        public virtual IQuerySource QuerySource { get; [NotNull] set; }
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        protected bool IsTrackingQuery
+        public virtual QueryModel QueryModel { get; [NotNull] set; }
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public virtual bool IsReloadQuery { get; }
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public override string ToString() => IsReloadQuery ? "AsReloadQuery()" : "AsNoReloadQuery()";
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public override ResultOperatorBase Clone(CloneContext cloneContext)
+            => new ReloadQueryResultOperator(IsReloadQuery);
+
+        /// <summary>
+        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public override void TransformExpressions(Func<Expression, Expression> transformation)
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get;
         }
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        protected bool IsReloadQuery
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get;
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected IKey Key
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get;
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected Func<MaterializationContext, object> Materializer
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get;
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        protected bool AllowNullResult
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get;
-            private set;
-        }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public abstract IShaper<TDerived> Cast<TDerived>()
-            where TDerived : class;
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public override Shaper AddOffset(int offset)
-        {
-            AllowNullResult = true;
-
-            return base.AddOffset(offset);
-        }
+        public override StreamedSequence ExecuteInMemory<T>(StreamedSequence input) => input;
     }
 }

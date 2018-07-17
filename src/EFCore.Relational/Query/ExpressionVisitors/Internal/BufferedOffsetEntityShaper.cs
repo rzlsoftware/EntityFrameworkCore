@@ -24,10 +24,11 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
         public BufferedOffsetEntityShaper(
             [NotNull] IQuerySource querySource,
             bool trackingQuery,
+            bool isReloadQuery,
             [NotNull] IKey key,
             [NotNull] Func<MaterializationContext, object> materializer,
             [CanBeNull] Dictionary<Type, int[]> typeIndexMap)
-            : base(querySource, trackingQuery, key, materializer, typeIndexMap)
+            : base(querySource, trackingQuery, isReloadQuery, key, materializer, typeIndexMap)
         {
         }
 

@@ -2581,6 +2581,66 @@ namespace Microsoft.EntityFrameworkCore
 
         #endregion
 
+        #region ReloadQuery
+
+        internal static readonly MethodInfo AsNoReloadQueryMethodInfo
+            = typeof(EntityFrameworkQueryableExtensions)
+                .GetTypeInfo().GetDeclaredMethod(nameof(AsNoReloadQuery));
+
+        /// <summary>
+        /// If the query is marked as ReloadQuery, all values of the existing entity in the DbContext will be overwritten by the database values.
+        /// </summary>
+        /// <typeparam name="TEntity"> The type of entity being queried. </typeparam>
+        /// <param name="source"> The source query. </param>
+        /// <returns>
+        ///     A new query where the result will not overwrite all values of the existing entity.
+        /// </returns>
+        public static IQueryable<TEntity> AsNoReloadQuery<TEntity>(
+            [NotNull] this IQueryable<TEntity> source)
+            where TEntity : class
+        {
+            Check.NotNull(source, nameof(source));
+
+            return
+                source.Provider is EntityQueryProvider
+                    ? source.Provider.CreateQuery<TEntity>(
+                        Expression.Call(
+                            instance: null,
+                            method: AsNoReloadQueryMethodInfo.MakeGenericMethod(typeof(TEntity)),
+                            arguments: source.Expression))
+                    : source;
+        }
+
+        internal static readonly MethodInfo AsReloadQueryMethodInfo
+            = typeof(EntityFrameworkQueryableExtensions)
+                .GetTypeInfo().GetDeclaredMethod(nameof(AsReloadQuery));
+
+        /// <summary>
+        /// If the query is marked as ReloadQuery, all values of the existing entity in the DbContext will be overwritten by the database values.
+        /// </summary>
+        /// <typeparam name="TEntity"> The type of entity being queried. </typeparam>
+        /// <param name="source"> The source query. </param>
+        /// <returns>
+        ///     A new query where the result will overwrite all values of the existing entity.
+        /// </returns>
+        public static IQueryable<TEntity> AsReloadQuery<TEntity>(
+            [NotNull] this IQueryable<TEntity> source)
+            where TEntity : class
+        {
+            Check.NotNull(source, nameof(source));
+
+            return
+                source.Provider is EntityQueryProvider
+                    ? source.Provider.CreateQuery<TEntity>(
+                        Expression.Call(
+                            instance: null,
+                            method: AsReloadQueryMethodInfo.MakeGenericMethod(typeof(TEntity)),
+                            arguments: source.Expression))
+                    : source;
+        }
+
+        #endregion
+
         #region Load
 
         /// <summary>

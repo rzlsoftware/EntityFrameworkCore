@@ -268,6 +268,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
                                 _querySource,
                                 QueryModelVisitor.QueryCompilationContext.IsTrackingQuery
                                 && !entityType.IsQueryType,
+                                QueryModelVisitor.QueryCompilationContext.IsReloadQuery,
                                 entityType.FindPrimaryKey(),
                                 materializer,
                                 materializerExpression,
@@ -292,6 +293,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         private static IShaper<TEntity> CreateEntityShaper<TEntity>(
             IQuerySource querySource,
             bool trackingQuery,
+            bool isReloadQuery,
             IKey key,
             Func<MaterializationContext, object> materializer,
             Expression materializerExpression,
@@ -302,12 +304,14 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
                 ? (IShaper<TEntity>)new UnbufferedEntityShaper<TEntity>(
                     querySource,
                     trackingQuery,
+                    isReloadQuery,
                     key,
                     materializer,
                     materializerExpression)
                 : new BufferedEntityShaper<TEntity>(
                     querySource,
                     trackingQuery,
+                    isReloadQuery,
                     key,
                     materializer,
                     typeIndexMap);

@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -50,6 +52,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             IKey key,
             EntityLoadInfo entityLoadInfo,
             bool queryStateManager,
+            bool isReloadQuery,
             bool throwOnNullKey)
         {
             if (queryStateManager)
@@ -58,6 +61,11 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                 if (entry != null)
                 {
+                    if (isReloadQuery)
+                    {
+                        ReloadEntityHelper.RefreshInternalEntityEntry(entry, entityLoadInfo.ValueBuffer, _dependencies.CurrentDbContext.Context);
+                    }
+
                     return entry.Entity;
                 }
             }

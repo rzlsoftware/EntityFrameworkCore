@@ -54,7 +54,8 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                 {
                     if (IsReloadQuery)
                     {
-                        ReloadEntityHelper.RefreshInternalEntityEntry(entry, valueBuffer, queryContext.Context);
+                        var curValueBuffer = valueBuffer;
+                        ReloadEntityHelper.RefreshInternalEntityEntry(entry, valueBuffer, queryContext.Context, () => (TEntity)Materializer(new MaterializationContext(curValueBuffer, queryContext.Context)));
                     }
 
                     return (TEntity)entry.Entity;

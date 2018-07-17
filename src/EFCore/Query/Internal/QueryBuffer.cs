@@ -63,7 +63,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 {
                     if (isReloadQuery)
                     {
-                        ReloadEntityHelper.RefreshInternalEntityEntry(entry, entityLoadInfo.ValueBuffer, _dependencies.CurrentDbContext.Context);
+                        ReloadEntityHelper.RefreshInternalEntityEntry(entry, entityLoadInfo.ValueBuffer, _dependencies.CurrentDbContext.Context, () => entityLoadInfo.Materialize());
                     }
 
                     return entry.Entity;

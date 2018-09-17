@@ -5704,34 +5704,131 @@ namespace Microsoft.EntityFrameworkCore
         {
             ExecuteWithStrategyInTransaction(
                 context =>
-                    {
-                        var dependent = context.Set<BadOrder>().Single();
+                {
+                    var dependent = context.Set<BadOrder>().Single();
 
-                        dependent.BadCustomerId = null;
+                    dependent.BadCustomerId = null;
 
-                        var principal = context.Set<BadCustomer>().Single();
+                    var principal = context.Set<BadCustomer>().Single();
 
-                        principal.Status++;
+                    principal.Status++;
 
-                        Assert.Null(dependent.BadCustomerId);
-                        Assert.Null(dependent.BadCustomer);
-                        Assert.Empty(principal.BadOrders);
+                    Assert.Null(dependent.BadCustomerId);
+                    Assert.Null(dependent.BadCustomer);
+                    Assert.Empty(principal.BadOrders);
 
-                        context.SaveChanges();
+                    context.SaveChanges();
 
-                        Assert.Null(dependent.BadCustomerId);
-                        Assert.Null(dependent.BadCustomer);
-                        Assert.Empty(principal.BadOrders);
-                    },
+                    Assert.Null(dependent.BadCustomerId);
+                    Assert.Null(dependent.BadCustomer);
+                    Assert.Empty(principal.BadOrders);
+                },
                 context =>
-                    {
-                        var dependent = context.Set<BadOrder>().Single();
-                        var principal = context.Set<BadCustomer>().Single();
+                {
+                    var dependent = context.Set<BadOrder>().Single();
+                    var principal = context.Set<BadCustomer>().Single();
 
-                        Assert.Null(dependent.BadCustomerId);
-                        Assert.Null(dependent.BadCustomer);
-                        Assert.Empty(principal.BadOrders);
-                    });
+                    Assert.Null(dependent.BadCustomerId);
+                    Assert.Null(dependent.BadCustomer);
+                    Assert.Empty(principal.BadOrders);
+                });
+        }
+
+        [ConditionalFact]
+        public virtual void Can_add_valid_first_depedent_when_multiple_possible_principal_sides()
+        {
+            ExecuteWithStrategyInTransaction(
+                context =>
+                {
+                    var quizTask = new QuizTask();
+                    quizTask.Choices.Add(new TaskChoice());
+
+                    context.Add(quizTask);
+
+                    context.SaveChanges();
+                },
+                context =>
+                {
+                    var quizTask = context.Set<QuizTask>().Include(e => e.Choices).Single();
+
+                    Assert.Equal(quizTask.Id, quizTask.Choices.Single().QuestTaskId);
+
+                    Assert.Same(quizTask.Choices.Single(), context.Set<TaskChoice>().Single());
+
+                    Assert.Empty(context.Set<HiddenAreaTask>().Include(e => e.Choices));
+                });
+        }
+
+        [ConditionalFact]
+        public virtual void Can_add_valid_second_depedent_when_multiple_possible_principal_sides()
+        {
+            ExecuteWithStrategyInTransaction(
+                context =>
+                {
+                    var hiddenAreaTask = new HiddenAreaTask();
+                    hiddenAreaTask.Choices.Add(new TaskChoice());
+
+                    context.Add(hiddenAreaTask);
+
+                    context.SaveChanges();
+                },
+                context =>
+                {
+                    var hiddenAreaTask = context.Set<HiddenAreaTask>().Include(e => e.Choices).Single();
+
+                    Assert.Equal(hiddenAreaTask.Id, hiddenAreaTask.Choices.Single().QuestTaskId);
+
+                    Assert.Same(hiddenAreaTask.Choices.Single(), context.Set<TaskChoice>().Single());
+
+                    Assert.Empty(context.Set<QuizTask>().Include(e => e.Choices));
+                });
+        }
+
+        [ConditionalFact]
+        public virtual void Can_add_multiple_depedents_when_multiple_possible_principal_sides()
+        {
+            ExecuteWithStrategyInTransaction(
+                context =>
+                {
+                    var quizTask = new QuizTask();
+                    quizTask.Choices.Add(new TaskChoice());
+                    quizTask.Choices.Add(new TaskChoice());
+
+                    context.Add(quizTask);
+
+                    var hiddenAreaTask = new HiddenAreaTask();
+                    hiddenAreaTask.Choices.Add(new TaskChoice());
+                    hiddenAreaTask.Choices.Add(new TaskChoice());
+
+                    context.Add(hiddenAreaTask);
+
+                    context.SaveChanges();
+                },
+                context =>
+                {
+                    var quizTask = context.Set<QuizTask>().Include(e => e.Choices).Single();
+                    var hiddenAreaTask = context.Set<HiddenAreaTask>().Include(e => e.Choices).Single();
+
+                    Assert.Equal(2, quizTask.Choices.Count);
+                    foreach (var quizTaskChoice in quizTask.Choices)
+                    {
+                        Assert.Equal(quizTask.Id, quizTaskChoice.QuestTaskId);
+                    }
+
+                    Assert.Equal(2, hiddenAreaTask.Choices.Count);
+                    foreach (var hiddenAreaTaskChoice in hiddenAreaTask.Choices)
+                    {
+                        Assert.Equal(hiddenAreaTask.Id, hiddenAreaTaskChoice.QuestTaskId);
+                    }
+
+                    foreach (var taskChoice in context.Set<TaskChoice>())
+                    {
+                        Assert.Equal(
+                            1,
+                            quizTask.Choices.Count(e => e.Id == taskChoice.Id)
+                            + hiddenAreaTask.Choices.Count(e => e.Id == taskChoice.Id));
+                    }
+                });
         }
     }
 }

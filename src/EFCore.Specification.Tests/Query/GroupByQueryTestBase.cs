@@ -515,7 +515,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                     && EmployeeID == other.EmployeeID;
         }
 
-        [ConditionalFact]
+        [ConditionalFact(Skip = "https://github.com/dotnet/corefx/issues/30955")]
         public virtual void GroupBy_Composite_Select_Dto_Sum_Min_Key_flattened_Max_Avg()
         {
             AssertQuery<Order>(
@@ -1991,6 +1991,46 @@ namespace Microsoft.EntityFrameworkCore.Query
                     Assert.Equal(expected[i].Lastest.Count(), actual[i].Lastest.Count());
                 }
             }
+        }
+
+        #endregion
+
+        #region ResultOperatorsAfterGroupBy
+
+        [ConditionalFact]
+        public virtual void Count_after_GroupBy_aggregate()
+        {
+            AssertSingleResult<Order>(
+                os =>os.GroupBy(o => o.CustomerID).Select(g => g.Sum(gg => gg.OrderID)).Count());
+        }
+
+        [ConditionalFact]
+        public virtual void LongCount_after_client_GroupBy()
+        {
+            AssertSingleResult<Order>(
+                os => (from o in os
+                      group o by new { o.CustomerID } into g
+                      select g.Where(e => e.OrderID < 10300).Count()).LongCount());
+        }
+
+        [ConditionalFact]
+        public virtual void MinMax_after_GroupBy_aggregate()
+        {
+            AssertSingleResult<Order>(
+                os => os.GroupBy(o => o.CustomerID).Select(g => g.Sum(gg => gg.OrderID)).Min());
+
+            AssertSingleResult<Order>(
+                os => os.GroupBy(o => o.CustomerID).Select(g => g.Sum(gg => gg.OrderID)).Max());
+        }
+
+        [ConditionalFact]
+        public virtual void AllAny_after_GroupBy_aggregate()
+        {
+            AssertSingleResult<Order>(
+                os => os.GroupBy(o => o.CustomerID).Select(g => g.Sum(gg => gg.OrderID)).All(ee => true));
+
+            AssertSingleResult<Order>(
+                os => os.GroupBy(o => o.CustomerID).Select(g => g.Sum(gg => gg.OrderID)).Any());
         }
 
         #endregion

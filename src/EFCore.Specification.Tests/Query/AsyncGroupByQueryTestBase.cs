@@ -512,7 +512,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                     && EmployeeID == other.EmployeeID;
         }
 
-        [ConditionalFact]
+        [ConditionalFact(Skip = "https://github.com/dotnet/corefx/issues/30955")]
         public virtual async Task GroupBy_Composite_Select_Dto_Sum_Min_Key_flattened_Max_Avg()
         {
             await AssertQuery<Order>(
@@ -1990,5 +1990,24 @@ namespace Microsoft.EntityFrameworkCore.Query
 
         #endregion
 
+        #region ResultOperatorsAfterGroupBy
+
+        [ConditionalFact]
+        public virtual async Task Count_after_GroupBy()
+        {
+            await AssertSingleResult<Order>(
+                os => os.GroupBy(o => o.CustomerID).Select(g => g.Sum(gg => gg.OrderID)).CountAsync());
+        }
+
+        [ConditionalFact]
+        public virtual async Task LongCount_after_client_GroupBy()
+        {
+            await AssertSingleResult<Order>(
+                os => (from o in os
+                       group o by new { o.CustomerID } into g
+                       select g.Where(e => e.OrderID < 10300).Count()).LongCountAsync());
+        }
+
+        #endregion
     }
 }

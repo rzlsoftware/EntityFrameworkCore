@@ -2,9 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore.TestModels.GearsOfWarModel;
+using Microsoft.EntityFrameworkCore.TestUtilities.Xunit;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -3034,7 +3037,7 @@ WHERE [g].[Discriminator] IN (N'Officer', N'Gear')");
             base.Where_datetimeoffset_now();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE [m].[Timeline] <> SYSDATETIMEOFFSET()");
         }
@@ -3044,7 +3047,7 @@ WHERE [m].[Timeline] <> SYSDATETIMEOFFSET()");
             base.Where_datetimeoffset_utcnow();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE [m].[Timeline] <> CAST(SYSUTCDATETIME() AS datetimeoffset)");
         }
@@ -3057,7 +3060,7 @@ WHERE [m].[Timeline] <> CAST(SYSUTCDATETIME() AS datetimeoffset)");
             AssertSql(
                 @"@__Date_0='0001-01-01T00:00:00'
 
-SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE CONVERT(date, [m].[Timeline]) > @__Date_0");
         }
@@ -3067,7 +3070,7 @@ WHERE CONVERT(date, [m].[Timeline]) > @__Date_0");
             base.Where_datetimeoffset_year_component();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE DATEPART(year, [m].[Timeline]) = 2");
         }
@@ -3077,7 +3080,7 @@ WHERE DATEPART(year, [m].[Timeline]) = 2");
             base.Where_datetimeoffset_month_component();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE DATEPART(month, [m].[Timeline]) = 1");
         }
@@ -3087,7 +3090,7 @@ WHERE DATEPART(month, [m].[Timeline]) = 1");
             base.Where_datetimeoffset_dayofyear_component();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE DATEPART(dayofyear, [m].[Timeline]) = 2");
         }
@@ -3097,7 +3100,7 @@ WHERE DATEPART(dayofyear, [m].[Timeline]) = 2");
             base.Where_datetimeoffset_day_component();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE DATEPART(day, [m].[Timeline]) = 2");
         }
@@ -3107,7 +3110,7 @@ WHERE DATEPART(day, [m].[Timeline]) = 2");
             base.Where_datetimeoffset_hour_component();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE DATEPART(hour, [m].[Timeline]) = 10");
         }
@@ -3117,7 +3120,7 @@ WHERE DATEPART(hour, [m].[Timeline]) = 10");
             base.Where_datetimeoffset_minute_component();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE DATEPART(minute, [m].[Timeline]) = 0");
         }
@@ -3127,7 +3130,7 @@ WHERE DATEPART(minute, [m].[Timeline]) = 0");
             base.Where_datetimeoffset_second_component();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE DATEPART(second, [m].[Timeline]) = 0");
         }
@@ -3137,7 +3140,7 @@ WHERE DATEPART(second, [m].[Timeline]) = 0");
             base.Where_datetimeoffset_millisecond_component();
 
             AssertSql(
-                @"SELECT [m].[Id], [m].[CodeName], [m].[Timeline]
+                @"SELECT [m].[Id], [m].[CodeName], [m].[Rating], [m].[Timeline]
 FROM [Missions] AS [m]
 WHERE DATEPART(millisecond, [m].[Timeline]) = 0");
         }
@@ -7412,6 +7415,26 @@ INNER JOIN (
 ) AS [t] ON [c.StationedGears].[AssignedCityName] = [t].[Name]
 WHERE [c.StationedGears].[Discriminator] IN (N'Officer', N'Gear')
 ORDER BY [t].[Name], [c.StationedGears].[Nickname] DESC");
+        }
+
+        public override void Correlated_collection_with_complex_order_by_funcletized_to_constant_bool()
+        {
+            base.Correlated_collection_with_complex_order_by_funcletized_to_constant_bool();
+
+            AssertSql(
+                @"SELECT [g].[Nickname], [g].[FullName]
+FROM [Gears] AS [g]
+WHERE [g].[Discriminator] IN (N'Officer', N'Gear')
+ORDER BY (SELECT 1) DESC, [g].[Nickname], [g].[SquadId], [g].[FullName]",
+                //
+                @"SELECT [t].[c], [t].[Nickname], [t].[SquadId], [t].[FullName], [g.Weapons].[Name], [g.Weapons].[OwnerFullName]
+FROM [Weapons] AS [g.Weapons]
+INNER JOIN (
+    SELECT CAST(0 AS bit) AS [c], [g0].[Nickname], [g0].[SquadId], [g0].[FullName]
+    FROM [Gears] AS [g0]
+    WHERE [g0].[Discriminator] IN (N'Officer', N'Gear')
+) AS [t] ON [g.Weapons].[OwnerFullName] = [t].[FullName]
+ORDER BY [t].[c] DESC, [t].[Nickname], [t].[SquadId], [t].[FullName]");
         }
 
         private void AssertSql(params string[] expected)

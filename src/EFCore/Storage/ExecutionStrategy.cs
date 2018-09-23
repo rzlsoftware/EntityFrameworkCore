@@ -285,7 +285,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
                     {
                         throw;
                     }
-
+                      
                     ExceptionsEncountered.Add(ex);
 
                     delay = GetNextDelay(ex);

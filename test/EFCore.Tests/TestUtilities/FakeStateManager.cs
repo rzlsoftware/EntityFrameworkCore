@@ -50,6 +50,10 @@ namespace Microsoft.EntityFrameworkCore.TestUtilities
         }
 
         public IEnumerable<InternalEntityEntry> Entries => Entries ?? Enumerable.Empty<InternalEntityEntry>();
+        public IReadOnlyList<InternalEntityEntry> GetEntriesList(Func<InternalEntityEntry, bool> filter = null) => Array.Empty<InternalEntityEntry>();
+        public IReadOnlyList<TResult> GetEntriesList<TResult>(Func<InternalEntityEntry, TResult> selector) => Array.Empty<TResult>();
+        public IReadOnlyList<TResult> GetEntriesList<TResult>(Func<InternalEntityEntry, bool> filter, Func<InternalEntityEntry, TResult> selector) => Array.Empty<TResult>();
+        public int GetEntriesCount(Func<InternalEntityEntry, bool> filter = null) => 0;
 
         public int ChangedCount { get; set; }
 
@@ -85,6 +89,7 @@ namespace Microsoft.EntityFrameworkCore.TestUtilities
         public void OnTracked(InternalEntityEntry internalEntityEntry, bool fromQuery) => Tracked?.Invoke(null, null);
         public event EventHandler<EntityStateChangedEventArgs> StateChanged;
         public void OnStateChanged(InternalEntityEntry internalEntityEntry, EntityState oldState) => StateChanged?.Invoke(null, null);
+
         public bool SensitiveLoggingEnabled { get; }
         public IDiagnosticsLogger<DbLoggerCategory.Update> UpdateLogger { get; }
     }

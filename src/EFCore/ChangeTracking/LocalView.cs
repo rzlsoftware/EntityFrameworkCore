@@ -70,8 +70,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
 
             set.GetService<ILocalViewListener>().RegisterView(StateManagerChangedHandler);
 
-            _count = stateManager.Entries
-                .Count(e => e.Entity is TEntity && e.EntityState != EntityState.Deleted);
+            _count = stateManager.GetEntriesCount(e => e.Entity is TEntity && e.EntityState != EntityState.Deleted);
         }
 
         /// <summary>
@@ -169,7 +168,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
         /// </summary>
         /// <returns> An enumerator for the collection. </returns>
         public virtual IEnumerator<TEntity> GetEnumerator()
-            => _context.GetDependencies().StateManager.Entries.Where(e => e.EntityState != EntityState.Deleted)
+            => _context.GetDependencies().StateManager.GetEntriesList(e => e.EntityState != EntityState.Deleted)
                 .Select(e => e.Entity)
                 .OfType<TEntity>()
                 .GetEnumerator();
@@ -238,9 +237,8 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
         /// </summary>
         public virtual void Clear()
         {
-            foreach (var entry in _context.GetDependencies().StateManager.Entries
-                .Where(e => e.Entity is TEntity && e.EntityState != EntityState.Deleted)
-                .ToList())
+            foreach (var entry in _context.GetDependencies().StateManager
+                .GetEntriesList(e => e.Entity is TEntity && e.EntityState != EntityState.Deleted))
             {
                 Remove((TEntity)entry.Entity);
             }
@@ -267,15 +265,9 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
         /// <param name="arrayIndex"> The index into the array to start copying. </param>
         public virtual void CopyTo(TEntity[] array, int arrayIndex)
         {
-            foreach (var entry in _context.GetDependencies().StateManager.Entries)
+            foreach (var entry in _context.GetDependencies().StateManager.GetEntriesList(e => e.EntityState != EntityState.Deleted && e.Entity is TEntity))
             {
-                if (entry.EntityState != EntityState.Deleted)
-                {
-                    if (entry.Entity is TEntity entity)
-                    {
-                        array[arrayIndex++] = entity;
-                    }
-                }
+                array[arrayIndex++] = (TEntity)entry.Entity;
             }
         }
 

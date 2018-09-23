@@ -118,9 +118,9 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
         {
             _logger.DetectChangesStarting(stateManager.Context);
 
-            foreach (var entry in stateManager.Entries.Where(
+            foreach (var entry in stateManager.GetEntriesList(
                 e => e.EntityState != EntityState.Detached
-                     && e.EntityType.GetChangeTrackingStrategy() == ChangeTrackingStrategy.Snapshot).ToList())
+                     && e.EntityType.GetChangeTrackingStrategy() == ChangeTrackingStrategy.Snapshot))
             {
                 // State might change while detecting changes on other entries
                 if (entry.EntityState != EntityState.Detached)

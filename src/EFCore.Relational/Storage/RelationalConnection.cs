@@ -605,7 +605,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </value>
         public virtual SemaphoreSlim Semaphore { get; } = new SemaphoreSlim(1);
 
-        private readonly List<IBufferable> _activeQueries = new List<IBufferable>();
+        private readonly List<WeakReference<IBufferable>> _activeQueries = new List<WeakReference<IBufferable>>();
         private Transaction _enlistedTransaction;
 
         /// <summary>
@@ -621,12 +621,15 @@ namespace Microsoft.EntityFrameworkCore.Storage
             {
                 for (var i = _activeQueries.Count - 1; i >= 0; i--)
                 {
-                    _activeQueries[i].BufferAll();
+                    if (_activeQueries[i].TryGetTarget(out var currentBufferable))
+                    {
+                        currentBufferable.BufferAll();
+                    }
 
                     _activeQueries.RemoveAt(i);
                 }
 
-                _activeQueries.Add(bufferable);
+                _activeQueries.Add(new WeakReference<IBufferable>(bufferable));
             }
         }
 
@@ -647,12 +650,15 @@ namespace Microsoft.EntityFrameworkCore.Storage
             {
                 for (var i = _activeQueries.Count - 1; i >= 0; i--)
                 {
-                    await _activeQueries[i].BufferAllAsync(cancellationToken).ConfigureAwait(false);
+                    if (_activeQueries[i].TryGetTarget(out var currentBufferable))
+                    {
+                        await currentBufferable.BufferAllAsync(cancellationToken).ConfigureAwait(false);
+                    }
 
                     _activeQueries.RemoveAt(i);
                 }
 
-                _activeQueries.Add(bufferable);
+                _activeQueries.Add(new WeakReference<IBufferable>(bufferable));
             }
         }
 

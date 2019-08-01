@@ -76,12 +76,12 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
             using (var masterConnection = _connection.CreateMasterConnection())
             {
                 await Dependencies.MigrationCommandExecutor
-                    .ExecuteNonQueryAsync(CreateCreateOperations(), masterConnection, cancellationToken);
+                    .ExecuteNonQueryAsync(CreateCreateOperations(), masterConnection, cancellationToken).ConfigureAwait(false);
 
                 ClearPool();
             }
 
-            await ExistsAsync(retryOnNotExists: true, cancellationToken: cancellationToken);
+            await ExistsAsync(retryOnNotExists: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
         protected override Task<bool> HasTablesAsync(CancellationToken cancellationToken = default)
             => Dependencies.ExecutionStrategyFactory.Create().ExecuteAsync(
                 _connection,
-                async (connection, ct) => (int)await CreateHasTablesCommand().ExecuteScalarAsync(connection, cancellationToken: ct) != 0, cancellationToken);
+                async (connection, ct) => (int)await CreateHasTablesCommand().ExecuteScalarAsync(connection, cancellationToken: ct).ConfigureAwait(false) != 0, cancellationToken);
 
         private IRelationalCommand CreateHasTablesCommand()
             => _rawSqlCommandBuilder
@@ -177,7 +177,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
                         {
                             using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
                             {
-                                await _connection.OpenAsync(ct, errorsExpected: true);
+                                await _connection.OpenAsync(ct, errorsExpected: true).ConfigureAwait(false);
 
                                 _connection.Close();
                             }
@@ -198,7 +198,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
                                 throw;
                             }
 
-                            await Task.Delay(RetryDelay, ct);
+                            await Task.Delay(RetryDelay, ct).ConfigureAwait(false);
                         }
                     }
                 }, cancellationToken);
@@ -269,7 +269,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
             using (var masterConnection = _connection.CreateMasterConnection())
             {
                 await Dependencies.MigrationCommandExecutor
-                    .ExecuteNonQueryAsync(CreateDropCommands(), masterConnection, cancellationToken);
+                    .ExecuteNonQueryAsync(CreateDropCommands(), masterConnection, cancellationToken).ConfigureAwait(false);
             }
         }
 

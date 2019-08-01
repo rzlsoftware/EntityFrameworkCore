@@ -67,7 +67,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.ValueGeneration.Internal
             => (long)Convert.ChangeType(
                 await _rawSqlCommandBuilder
                     .Build(_sqlGenerator.GenerateNextSequenceValueOperation(_sequence.Name, _sequence.Schema))
-                    .ExecuteScalarAsync(_connection, cancellationToken: cancellationToken),
+                    .ExecuteScalarAsync(_connection, cancellationToken: cancellationToken).ConfigureAwait(false),
                 typeof(long),
                 CultureInfo.InvariantCulture);
 

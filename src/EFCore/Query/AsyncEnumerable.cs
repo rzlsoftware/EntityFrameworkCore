@@ -55,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
             using (var asyncEnumerator = _asyncEnumerable.GetEnumerator())
             {
-                while (await asyncEnumerator.MoveNext(cancellationToken))
+                while (await asyncEnumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                 {
                     list.Add(asyncEnumerator.Current);
                 }
@@ -80,7 +80,7 @@ namespace Microsoft.EntityFrameworkCore.Query
         /// </returns>
         public async Task<TResult[]> ToArrayAsync(
             CancellationToken cancellationToken = default)
-            => (await ToListAsync(cancellationToken)).ToArray();
+            => (await ToListAsync(cancellationToken).ConfigureAwait(false)).ToArray();
 
         /// <summary>
         ///     Asynchronously enumerates the query. When using Entity Framework, this causes the results of the query to
@@ -96,7 +96,7 @@ namespace Microsoft.EntityFrameworkCore.Query
         {
             using (var enumerator = _asyncEnumerable.GetEnumerator())
             {
-                while (await enumerator.MoveNext(cancellationToken))
+                while (await enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                 {
                 }
             }
@@ -260,7 +260,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
             using (var asyncEnumerator = _asyncEnumerable.GetEnumerator())
             {
-                while (await asyncEnumerator.MoveNext(cancellationToken))
+                while (await asyncEnumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                 {
                     action(asyncEnumerator.Current);
                 }

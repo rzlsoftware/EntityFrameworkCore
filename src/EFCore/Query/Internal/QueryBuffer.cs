@@ -317,7 +317,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             {
                 asyncEnumerator = relatedEntitiesFactory().GetEnumerator();
 
-                if (!await asyncEnumerator.MoveNext(cancellationToken))
+                if (!await asyncEnumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                 {
                     asyncEnumerator.Dispose();
                     asyncEnumerator = null;
@@ -408,7 +408,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                         }
                     }
 
-                    if (!await asyncEnumerator.MoveNext(cancellationToken))
+                    if (!await asyncEnumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                     {
                         asyncEnumerator.Dispose();
 
@@ -614,7 +614,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             {
                 enumerator = correlatedCollectionFactory().GetEnumerator();
 
-                if (!await enumerator.MoveNext(cancellationToken))
+                if (!await enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                 {
                     enumerator.Dispose();
                     enumerator = null;
@@ -666,7 +666,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                     correlatedCollectionMetadataElement.PreviousOriginKey = enumerator.Current.Item3;
                     _correlatedCollectionMetadata[correlatedCollectionId] = correlatedCollectionMetadataElement;
 
-                    if (!await enumerator.MoveNext(cancellationToken))
+                    if (!await enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                     {
                         enumerator.Dispose();
                         enumerator = null;

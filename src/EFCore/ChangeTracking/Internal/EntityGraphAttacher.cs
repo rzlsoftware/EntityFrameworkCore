@@ -94,7 +94,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                     : EntityState.Added,
                 acceptChanges: true,
                 forceStateWhenUnknownKey: force ? (EntityState?)entityState : null,
-                cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return true;
         }

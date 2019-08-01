@@ -236,7 +236,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                 using (var asyncEnumerator = asyncEnumerable.GetEnumerator())
                 {
-                    await asyncEnumerator.MoveNext(queryContext.CancellationToken);
+                    await asyncEnumerator.MoveNext(queryContext.CancellationToken).ConfigureAwait(false);
 
                     return asyncEnumerator.Current;
                 }

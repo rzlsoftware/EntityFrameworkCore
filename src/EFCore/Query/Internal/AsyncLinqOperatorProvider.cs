@@ -151,7 +151,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
                 {
                     using (await _exceptionInterceptor._queryContext.ConcurrencyDetector
-                        .EnterCriticalSectionAsync(cancellationToken))
+                        .EnterCriticalSectionAsync(cancellationToken).ConfigureAwait(false))
                     {
                         try
                         {
@@ -160,7 +160,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                                 _innerEnumerator = _exceptionInterceptor._innerAsyncEnumerable.GetEnumerator();
                             }
 
-                            return await _innerEnumerator.MoveNext(cancellationToken);
+                            return await _innerEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
                         }
                         catch (Exception exception)
                         {
@@ -304,7 +304,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
                 {
-                    if (!await _asyncEnumerator.MoveNext())
+                    if (!await _asyncEnumerator.MoveNext().ConfigureAwait(false))
                     {
                         return false;
                     }
@@ -391,7 +391,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                     if (!_moved)
                     {
-                        await _task;
+                        await _task.ConfigureAwait(false);
 
                         _moved = true;
 
@@ -589,12 +589,12 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
                 {
-                    if (!await _enumerator.MoveNext(cancellationToken))
+                    if (!await _enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                     {
                         return false;
                     }
 
-                    Current = await _selector(_enumerator.Current, cancellationToken);
+                    Current = await _selector(_enumerator.Current, cancellationToken).ConfigureAwait(false);
 
                     return true;
                 }

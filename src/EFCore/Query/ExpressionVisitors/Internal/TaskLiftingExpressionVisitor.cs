@@ -70,7 +70,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
 
             for (var i = 0; i < taskFactories.Count; i++)
             {
-                results[i] = await taskFactories[i]();
+                results[i] = await taskFactories[i]().ConfigureAwait(false);
             }
 
             return selector(results);

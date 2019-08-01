@@ -156,7 +156,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         {
             var collection = (ICollection<TEntity>)navigation.GetCollectionAccessor().Create();
 
-            await elements.ForEachAsync(e => collection.Add((TEntity)e), cancellationToken);
+            await elements.ForEachAsync(e => collection.Add((TEntity)e), cancellationToken).ConfigureAwait(false);
 
             return collection;
         }

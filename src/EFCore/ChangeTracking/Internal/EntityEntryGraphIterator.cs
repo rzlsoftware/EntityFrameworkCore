@@ -79,7 +79,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
             Func<EntityEntryGraphNode, TState, CancellationToken, Task<bool>> handleNode,
             CancellationToken cancellationToken = default)
         {
-            if (!await handleNode(node, state, cancellationToken))
+            if (!await handleNode(node, state, cancellationToken).ConfigureAwait(false))
             {
                 return;
             }
@@ -106,7 +106,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                                 node.CreateNode(node, targetEntry, navigation),
                                 state,
                                 handleNode,
-                                cancellationToken);
+                                cancellationToken).ConfigureAwait(false);
                         }
                     }
                     else
@@ -118,7 +118,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                             node.CreateNode(node, targetEntry, navigation),
                             state,
                             handleNode,
-                            cancellationToken);
+                            cancellationToken).ConfigureAwait(false);
                     }
                 }
             }

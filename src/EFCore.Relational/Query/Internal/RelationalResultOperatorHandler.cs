@@ -749,13 +749,13 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                     if (_sourceEnumerator == null)
                     {
                         _sourceEnumerator = _groupByAsyncEnumerable._source.GetEnumerator();
-                        _hasNext = await _sourceEnumerator.MoveNext(cancellationToken);
+                        _hasNext = await _sourceEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
                     }
 
                     if (_hasNext)
                     {
                         var currentKey = _groupByAsyncEnumerable._keySelector(_sourceEnumerator.Current);
-                        var element = await _groupByAsyncEnumerable._elementSelector(_sourceEnumerator.Current, cancellationToken);
+                        var element = await _groupByAsyncEnumerable._elementSelector(_sourceEnumerator.Current, cancellationToken).ConfigureAwait(false);
                         var grouping = new Grouping<TKey, TElement>(currentKey)
                         {
                             element
@@ -763,7 +763,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                         while (true)
                         {
-                            _hasNext = await _sourceEnumerator.MoveNext(cancellationToken);
+                            _hasNext = await _sourceEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
 
                             if (!_hasNext)
                             {
@@ -777,7 +777,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                                 break;
                             }
 
-                            grouping.Add(await _groupByAsyncEnumerable._elementSelector(_sourceEnumerator.Current, cancellationToken));
+                            grouping.Add(await _groupByAsyncEnumerable._elementSelector(_sourceEnumerator.Current, cancellationToken).ConfigureAwait(false));
                         }
 
                         Current = grouping;

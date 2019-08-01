@@ -188,7 +188,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         [NotNull]
         public virtual async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
             // ReSharper disable once RedundantNameQualifier
-            => await BeginTransactionAsync(System.Data.IsolationLevel.Unspecified, cancellationToken);
+            => await BeginTransactionAsync(System.Data.IsolationLevel.Unspecified, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         ///     Begins a new transaction.
@@ -220,7 +220,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
             System.Data.IsolationLevel isolationLevel,
             CancellationToken cancellationToken = default)
         {
-            await OpenAsync(cancellationToken);
+            await OpenAsync(cancellationToken).ConfigureAwait(false);
 
             EnsureNoTransactions();
 
@@ -379,7 +379,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
 
             if (DbConnection.State != ConnectionState.Open)
             {
-                await OpenDbConnectionAsync(errorsExpected, cancellationToken);
+                await OpenDbConnectionAsync(errorsExpected, cancellationToken).ConfigureAwait(false);
                 wasOpened = true;
                 ClearTransactions();
             }
@@ -458,7 +458,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
 
             try
             {
-                await DbConnection.OpenAsync(cancellationToken);
+                await DbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
                 Dependencies.ConnectionLogger.ConnectionOpened(
                     this,
@@ -654,7 +654,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
             {
                 for (var i = _activeQueries.Count - 1; i >= 0; i--)
                 {
-                    await _activeQueries[i].BufferAllAsync(cancellationToken);
+                    await _activeQueries[i].BufferAllAsync(cancellationToken).ConfigureAwait(false);
 
                     _activeQueries.RemoveAt(i);
                 }

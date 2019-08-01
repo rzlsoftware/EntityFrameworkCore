@@ -66,7 +66,7 @@ namespace Microsoft.EntityFrameworkCore
             [NotNull] this DatabaseFacade databaseFacade,
             CancellationToken cancellationToken = default)
             => (await Check.NotNull(databaseFacade, nameof(databaseFacade)).GetRelationalService<IHistoryRepository>()
-                .GetAppliedMigrationsAsync(cancellationToken)).Select(hr => hr.MigrationId);
+                .GetAppliedMigrationsAsync(cancellationToken).ConfigureAwait(false)).Select(hr => hr.MigrationId);
 
         /// <summary>
         ///     Gets all migrations that are defined in the assembly but haven't been applied to the target database.
@@ -85,7 +85,7 @@ namespace Microsoft.EntityFrameworkCore
         public static async Task<IEnumerable<string>> GetPendingMigrationsAsync(
             [NotNull] this DatabaseFacade databaseFacade,
             CancellationToken cancellationToken = default)
-            => GetMigrations(databaseFacade).Except(await GetAppliedMigrationsAsync(databaseFacade, cancellationToken));
+            => GetMigrations(databaseFacade).Except(await GetAppliedMigrationsAsync(databaseFacade, cancellationToken).ConfigureAwait(false));
 
         /// <summary>
         ///     <para>
@@ -313,7 +313,7 @@ namespace Microsoft.EntityFrameworkCore
 
             var concurrencyDetector = databaseFacade.GetService<IConcurrencyDetector>();
 
-            using (await concurrencyDetector.EnterCriticalSectionAsync(cancellationToken))
+            using (await concurrencyDetector.EnterCriticalSectionAsync(cancellationToken).ConfigureAwait(false))
             {
                 var rawSqlCommand = databaseFacade
                     .GetRelationalService<IRawSqlCommandBuilder>()
@@ -324,7 +324,7 @@ namespace Microsoft.EntityFrameworkCore
                     .ExecuteNonQueryAsync(
                         databaseFacade.GetRelationalService<IRelationalConnection>(),
                         rawSqlCommand.ParameterValues,
-                        cancellationToken);
+                        cancellationToken).ConfigureAwait(false);
             }
         }
 

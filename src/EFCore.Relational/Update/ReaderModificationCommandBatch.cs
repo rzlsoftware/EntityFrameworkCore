@@ -288,9 +288,9 @@ namespace Microsoft.EntityFrameworkCore.Update
                 using (var dataReader = await storeCommand.RelationalCommand.ExecuteReaderAsync(
                     connection,
                     parameterValues: storeCommand.ParameterValues,
-                    cancellationToken: cancellationToken))
+                    cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
-                    await ConsumeAsync(dataReader, cancellationToken);
+                    await ConsumeAsync(dataReader, cancellationToken).ConfigureAwait(false);
                 }
             }
             catch (DbUpdateException)

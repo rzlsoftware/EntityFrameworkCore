@@ -101,7 +101,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                 {
                     if (_dataReader == null)
                     {
-                        await _relationalQueryContext.Connection.OpenAsync(cancellationToken);
+                        await _relationalQueryContext.Connection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
                         try
                         {
@@ -112,7 +112,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                             _dataReader
                                 = await relationalCommand.ExecuteReaderAsync(
                                     _relationalQueryContext.Connection,
-                                    _relationalQueryContext.ParameterValues, cancellationToken);
+                                    _relationalQueryContext.ParameterValues, cancellationToken).ConfigureAwait(false);
                         }
                         catch
                         {
@@ -127,13 +127,13 @@ namespace Microsoft.EntityFrameworkCore.Query
                     }
 
                     using (await _relationalQueryContext.ConcurrencyDetector
-                        .EnterCriticalSectionAsync(cancellationToken))
+                        .EnterCriticalSectionAsync(cancellationToken).ConfigureAwait(false))
                     {
                         bool hasNext;
 
                         try
                         {
-                            hasNext = await _dbDataReader.ReadAsync(cancellationToken);
+                            hasNext = await _dbDataReader.ReadAsync(cancellationToken).ConfigureAwait(false);
                         }
                         catch (Exception exception)
                         {
@@ -241,7 +241,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
                 {
-                    if (!await _enumerator.MoveNext(cancellationToken))
+                    if (!await _enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                     {
                         return false;
                     }
@@ -309,7 +309,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
             using (var enumerator = valueBuffers.GetEnumerator())
             {
-                if (await enumerator.MoveNext(cancellationToken))
+                if (await enumerator.MoveNext(cancellationToken).ConfigureAwait(false))
                 {
                     return enumerator.Current[0] == null
                         ? !throwOnNullResult
@@ -378,7 +378,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                     if (_sourceEnumerator == null)
                     {
                         _sourceEnumerator = _groupByAsyncEnumerable._source.GetEnumerator();
-                        _hasNext = await _sourceEnumerator.MoveNext(cancellationToken);
+                        _hasNext = await _sourceEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
                     }
 
                     if (_hasNext)
@@ -392,7 +392,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
                         while (true)
                         {
-                            _hasNext = await _sourceEnumerator.MoveNext(cancellationToken);
+                            _hasNext = await _sourceEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
 
                             if (!_hasNext)
                             {
@@ -501,7 +501,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                     if (_sourceEnumerator == null)
                     {
                         _sourceEnumerator = _groupJoinAsyncEnumerable._source.GetEnumerator();
-                        _hasNext = await _sourceEnumerator.MoveNext(cancellationToken);
+                        _hasNext = await _sourceEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
                         _nextOuter = default;
                     }
 
@@ -529,7 +529,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                                 = _groupJoinAsyncEnumerable._resultSelector(
                                     outer, inners.ToAsyncEnumerable());
 
-                            _hasNext = await _sourceEnumerator.MoveNext(cancellationToken);
+                            _hasNext = await _sourceEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
 
                             return true;
                         }
@@ -540,7 +540,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
                         while (true)
                         {
-                            _hasNext = await _sourceEnumerator.MoveNext(cancellationToken);
+                            _hasNext = await _sourceEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
 
                             if (!_hasNext)
                             {
@@ -659,7 +659,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                 public TElement Current => _innerEnumerator.Current;
 
                 public async Task<bool> MoveNext(CancellationToken cancellationToken)
-                    => await _innerEnumerator.MoveNext(cancellationToken);
+                    => await _innerEnumerator.MoveNext(cancellationToken).ConfigureAwait(false);
 
                 public void Dispose() => _innerEnumerator.Dispose();
             }

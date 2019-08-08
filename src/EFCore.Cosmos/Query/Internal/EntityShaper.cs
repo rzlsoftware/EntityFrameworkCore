@@ -21,18 +21,21 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
     {
         private readonly IEntityType _entityType;
         private readonly bool _trackingQuery;
+        private readonly bool _isReloadQuery;
         private readonly bool _useQueryBuffer;
         private readonly IEntityMaterializerSource _entityMaterializerSource;
 
         public EntityShaper(
             IEntityType entityType,
             bool trackingQuery,
+            bool isReloadQuery,
             bool useQueryBuffer,
             IEntityMaterializerSource entityMaterializerSource)
         {
             _entityType = entityType;
             _entityMaterializerSource = entityMaterializerSource;
             _trackingQuery = trackingQuery;
+            _isReloadQuery = isReloadQuery;
             _useQueryBuffer = useQueryBuffer;
         }
 
@@ -51,6 +54,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
                         jObjectParameter,
                         EntityQueryModelVisitor.QueryContextParameter,
                         Expression.Constant(_trackingQuery),
+                        Expression.Constant(_isReloadQuery),
                         Expression.Constant(_useQueryBuffer),
                         entityInfo),
                     _entityType.ClrType),
@@ -220,6 +224,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
             JObject jObject,
             QueryContext queryContext,
             bool trackingQuery,
+            bool isReloadQuery,
             bool bufferedQuery,
             EntityInfo entityInfo)
         {
@@ -236,6 +241,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
                             jObject,
                             queryContext,
                             trackingQuery,
+                            isReloadQuery,
                             bufferedQuery,
                             entityInfo,
                             entry.Entity);
@@ -247,6 +253,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
                             jObject,
                             queryContext,
                             trackingQuery,
+                            isReloadQuery,
                             bufferedQuery,
                             entityInfo,
                             entity);
@@ -261,12 +268,14 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
                                 entityInfo.Materializer,
                                 entityInfo.TypeIndexMap),
                             queryStateManager: trackingQuery,
+                            isReloadQuery: isReloadQuery,
                             throwOnNullKey: true);
 
                 return ShapeNestedEntities(
                             jObject,
                             queryContext,
                             trackingQuery,
+                            isReloadQuery,
                             bufferedQuery,
                             entityInfo,
                             entity);
@@ -277,6 +286,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
             JObject jObject,
             QueryContext queryContext,
             bool trackingQuery,
+            bool isReloadQuery,
             bool bufferedQuery,
             EntityInfo entityInfo,
             object parentEntity)
@@ -301,6 +311,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
                         nestedJObject,
                         queryContext,
                         trackingQuery,
+                        isReloadQuery,
                         bufferedQuery,
                         nestedEntityInfo);
                     nestedNavigation.GetSetter().SetClrValue(parentEntity, nestedEntity);
@@ -318,6 +329,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.Internal
                                 nestedJObject,
                                 queryContext,
                                 trackingQuery,
+                                isReloadQuery,
                                 bufferedQuery,
                                 nestedEntityInfo));
                         }

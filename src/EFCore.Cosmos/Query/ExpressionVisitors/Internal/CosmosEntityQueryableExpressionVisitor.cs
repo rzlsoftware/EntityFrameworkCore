@@ -53,6 +53,8 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Query.ExpressionVisitors.Internal
                 new EntityShaper(entityType,
                     trackingQuery: QueryModelVisitor.QueryCompilationContext.IsTrackingQuery
                         && !entityType.IsQueryType,
+                    isReloadQuery: QueryModelVisitor.QueryCompilationContext.IsReloadQuery
+                        && !entityType.IsQueryType,
                     useQueryBuffer: QueryModelVisitor.QueryCompilationContext.IsQueryBufferRequired
                         && !entityType.IsQueryType,
                     _entityMaterializerSource));

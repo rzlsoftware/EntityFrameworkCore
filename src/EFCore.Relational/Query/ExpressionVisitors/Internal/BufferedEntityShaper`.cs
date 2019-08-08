@@ -50,8 +50,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
         {
             Debug.Assert(queryContext != null);
 
-            var entity
-                = (TEntity)queryContext.QueryBuffer
+            return (TEntity)queryContext.QueryBuffer
                     .GetEntity(
                         Key,
                         new EntityLoadInfo(
@@ -61,8 +60,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                         queryStateManager: IsTrackingQuery,
                         isReloadQuery: IsReloadQuery,
                         throwOnNullKey: !AllowNullResult);
-
-            return entity;
         }
 
         /// <summary>

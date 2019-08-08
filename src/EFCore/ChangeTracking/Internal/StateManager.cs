@@ -202,6 +202,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
 
                 AddToReferenceMap(entry);
             }
+
             return entry;
         }
 
@@ -221,6 +222,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                     ? value
                     : property.ClrType.GetDefaultValue();
             }
+
             var valueBuffer = new ValueBuffer(valuesArray);
 
             var entity = entityType.HasClrType()
@@ -300,14 +302,14 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
             }
 
             var clrType = entity.GetType();
-
-            var newEntry = _internalEntityEntryFactory.Create(
-                this,
-                baseEntityType.ClrType == clrType
+            var entityType = baseEntityType.ClrType == clrType
                 || baseEntityType.HasDefiningNavigation()
                     ? baseEntityType
-                    : _model.FindRuntimeEntityType(clrType),
-                entity, valueBuffer);
+                    : _model.FindRuntimeEntityType(clrType);
+
+            var newEntry = valueBuffer.IsEmpty
+                ? _internalEntityEntryFactory.Create(this, entityType, entity)
+                : _internalEntityEntryFactory.Create(this, entityType, entity, valueBuffer);
 
             foreach (var key in baseEntityType.GetKeys())
             {
@@ -434,12 +436,14 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                 identityMap = key.GetIdentityMapFactory()(SensitiveLoggingEnabled);
                 _identityMaps[key] = identityMap;
             }
+
             return identityMap;
         }
 
         private IIdentityMap FindIdentityMap(IKey key)
         {
-            if (_identityMap0 == null)
+            if (_identityMap0 == null
+                || key == null)
             {
                 return null;
             }
@@ -533,8 +537,9 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
         /// </summary>
         public virtual IEnumerable<InternalEntityEntry> Entries => _entityReferenceMap.Values
             .Concat(_dependentTypeReferenceMap.Values.SelectMany(e => e.Values))
-            .Where(e => e.EntityState != EntityState.Detached
-                        && (e.SharedIdentityEntry == null || e.EntityState != EntityState.Deleted));
+            .Where(
+                e => e.EntityState != EntityState.Detached
+                     && (e.SharedIdentityEntry == null || e.EntityState != EntityState.Deleted));
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -627,7 +632,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
 
                         var newList = keyValuePair.Value.Where(tuple => tuple.Item2 != entry).ToList();
 
-                        if (newList.Any())
+                        if (newList.Count > 0)
                         {
                             _referencedUntrackedEntities.Value.Add(keyValuePair.Key, newList);
                         }
@@ -678,6 +683,9 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
             _queryIsTracked = false;
             _trackingQueryMode = TrackingQueryMode.Simple;
             _singleQueryModeEntityType = null;
+
+            Tracked = null;
+            StateChanged = null;
         }
 
         /// <summary>
@@ -692,6 +700,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                 danglers = new List<Tuple<INavigation, InternalEntityEntry>>();
                 _referencedUntrackedEntities.Value.Add(referencedEntity, danglers);
             }
+
             danglers.Add(Tuple.Create(navigation, referencedFromEntry));
         }
 
@@ -699,7 +708,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public virtual IEnumerable<Tuple<INavigation, InternalEntityEntry>> GetRecordedReferers(object referencedEntity, bool clear)
+        public virtual IEnumerable<Tuple<INavigation, InternalEntityEntry>> GetRecordedReferrers(object referencedEntity, bool clear)
         {
             if (_referencedUntrackedEntities.HasValue
                 && _referencedUntrackedEntities.Value.TryGetValue(referencedEntity, out var danglers))
@@ -708,6 +717,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                 {
                     _referencedUntrackedEntities.Value.Remove(referencedEntity);
                 }
+
                 return danglers;
             }
 
@@ -875,6 +885,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                 {
                     entry.DiscardStoreGeneratedValues();
                 }
+
                 throw;
             }
         }
@@ -920,7 +931,10 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                                            ?? GetDependents(entry, fk)).ToList())
                 {
                     if (dependent.EntityState != EntityState.Deleted
-                        && dependent.EntityState != EntityState.Detached)
+                        && dependent.EntityState != EntityState.Detached
+                        && fk.DeleteBehavior != DeleteBehavior.Restrict
+                        && (dependent.EntityState == EntityState.Added
+                            || KeysEqual(entry, fk, dependent)))
                     {
                         if (fk.DeleteBehavior == DeleteBehavior.Cascade)
                         {
@@ -941,7 +955,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
 
                             CascadeDelete(dependent);
                         }
-                        else if (fk.DeleteBehavior != DeleteBehavior.Restrict)
+                        else
                         {
                             foreach (var dependentProperty in fk.Properties)
                             {
@@ -958,6 +972,32 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
             }
         }
 
+        private static bool KeysEqual(InternalEntityEntry entry, IForeignKey fk, InternalEntityEntry dependent)
+        {
+            for (var i = 0; i < fk.Properties.Count; i++)
+            {
+                var principalProperty = fk.PrincipalKey.Properties[i];
+                var dependentProperty = fk.Properties[i];
+
+                if (!KeyValuesEqual(
+                    principalProperty,
+                    entry[principalProperty],
+                    dependent[dependentProperty]))
+                {
+                    //dependent[dependentProperty] = null;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool KeyValuesEqual(IProperty property, object value, object currentValue)
+            => (property.GetKeyValueComparer()
+                ?? property.FindMapping()?.KeyComparer)
+               ?.Equals(currentValue, value)
+               ?? Equals(currentValue, value);
+
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -971,7 +1011,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
             }
 
             var entriesToSave = GetInternalEntriesToSave();
-            if (!entriesToSave.Any())
+            if (entriesToSave.Count == 0)
             {
                 return 0;
             }
@@ -993,6 +1033,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
                 {
                     entry.DiscardStoreGeneratedValues();
                 }
+
                 throw;
             }
         }

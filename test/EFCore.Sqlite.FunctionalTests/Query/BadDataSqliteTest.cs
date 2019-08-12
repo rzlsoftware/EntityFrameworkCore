@@ -384,6 +384,11 @@ namespace Microsoft.EntityFrameworkCore.Query
             {
             }
 
+
+            public void UnregisterBufferable(IBufferable bufferable)
+            {
+            }
+
             public Task RegisterBufferableAsync(IBufferable bufferable, CancellationToken cancellationToken) => throw new NotImplementedException();
             public string ConnectionString { get; }
             public DbConnection DbConnection { get; }

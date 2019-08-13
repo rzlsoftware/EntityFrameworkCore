@@ -116,6 +116,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
         /// </summary>
         /// <returns> An entry for each entity being tracked. </returns>
         //[Obsolete("Bitte wenn möglich GetEntriesList() verwenden, da Entries nicht threadsafe ist!")]
+
         public virtual IEnumerable<EntityEntry> Entries()
         {
             TryDetectChanges();
@@ -164,6 +165,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
         /// <typeparam name="TEntity"> The type of entities to get entries for. </typeparam>
         /// <returns> An entry for each entity of the given type that is being tracked. </returns>
         //[Obsolete("Bitte wenn möglich GetEntriesList() verwenden, da Entries nicht threadsafe ist!")]
+        //Obsolete vorerst auskommentiert, damit Build läuft!
         public virtual IEnumerable<EntityEntry<TEntity>> Entries<TEntity>()
             where TEntity : class
         {

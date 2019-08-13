@@ -3,7 +3,7 @@
     <MajorVersion>2</MajorVersion>
     <MinorVersion>2</MinorVersion>
     <PatchVersion>6</PatchVersion>
-    <PreReleaseLabel>servicing</PreReleaseLabel>
+    <PreReleaseLabel>RZL</PreReleaseLabel>
     <OfficialBuildId Condition="'$(OfficialBuildId)' == ''">$(BUILD_BUILDNUMBER)</OfficialBuildId>
   </PropertyGroup>
 
@@ -39,7 +39,7 @@
     <!-- Run the build with /p:IsFinalBuild=true to produce the product with 'final' branding and versioning -->
     <IsFinalBuild Condition=" '$(IsFinalBuild)' == '' ">false</IsFinalBuild>
     <IncludePreReleaseLabelInPackageVersion>true</IncludePreReleaseLabelInPackageVersion>
-    <IncludePreReleaseLabelInPackageVersion Condition=" '$(IsFinalBuild)' == 'true' AND ('$(PreReleaseLabel)' == 'servicing' OR '$(PreReleaseLabel)' == 'rtm')">false</IncludePreReleaseLabelInPackageVersion>
+    <IncludePreReleaseLabelInPackageVersion Condition=" '$(IsFinalBuild)' == 'true' AND ('$(PreReleaseLabel)' == 'servicing' OR '$(PreReleaseLabel)' == 'rtm' OR '$(PreReleaseLabel)' == 'RZL')">false</IncludePreReleaseLabelInPackageVersion>
 
     <!-- The version in files -->
     <PackageVersion>$(VersionPrefix)</PackageVersion>

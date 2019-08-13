@@ -7,9 +7,7 @@
     <AssemblyName>Microsoft.EntityFrameworkCore.Relational</AssemblyName>
     <RootNamespace>Microsoft.EntityFrameworkCore</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <CodeAnalysisRuleSet>..\EFCore.ruleset</CodeAnalysisRuleSet>
-    <Version>2.1.3.1-RZL</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <CodeAnalysisRuleSet>..\..\EFCore.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,5 +46,7 @@
       <CustomToolNamespace>Microsoft.EntityFrameworkCore.Internal</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties breakingchanges_1netcore_1json__JsonSchema="http://json.schemastore.org/bundleconfig" /></VisualStudio></ProjectExtensions>
 
 </Project>

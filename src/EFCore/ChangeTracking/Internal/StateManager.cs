@@ -475,7 +475,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IReadOnlyList<InternalEntityEntry> GetEntriesList(Func<InternalEntityEntry, bool> filter = null)
+        public virtual IReadOnlyList<InternalEntityEntry> GetEntriesList(Func<InternalEntityEntry, bool> filter = null)
         {
             lock (_entriesLockObject)
             {
@@ -492,7 +492,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IReadOnlyList<TResult> GetEntriesList<TResult>(Func<InternalEntityEntry, TResult> selector)
+        public virtual IReadOnlyList<TResult> GetEntriesList<TResult>(Func<InternalEntityEntry, TResult> selector)
         {
             return GetEntriesList(null, selector);
         }
@@ -501,7 +501,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public IReadOnlyList<TResult> GetEntriesList<TResult>(Func<InternalEntityEntry, bool> filter, Func<InternalEntityEntry, TResult> selector)
+        public virtual IReadOnlyList<TResult> GetEntriesList<TResult>(Func<InternalEntityEntry, bool> filter, Func<InternalEntityEntry, TResult> selector)
         {
             lock (_entriesLockObject)
             {
@@ -518,7 +518,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking.Internal
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public int GetEntriesCount(Func<InternalEntityEntry, bool> filter = null)
+        public virtual int GetEntriesCount(Func<InternalEntityEntry, bool> filter = null)
         {
             lock (_entriesLockObject)
             {
